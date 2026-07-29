@@ -1,10 +1,14 @@
 package com.orkhan.library.service.impl;
 
+import com.orkhan.library.dto.BookRequestDto;
+import com.orkhan.library.dto.BookResponseDto;
 import com.orkhan.library.entity.Book;
 import com.orkhan.library.repository.BookRepository;
 import com.orkhan.library.repository.AuthorRepository;
 import com.orkhan.library.service.BookService;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.NoSuchElementException;
 import java.util.List;
@@ -21,33 +25,63 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public Page<BookResponseDto> getAllBooks(Pageable pageable) {
+        return bookRepository.findAll(pageable)
+                .map(this::convertToResponseDto);
     }
 
     @Override
-    public Book saveBook(Book book) {
-        return bookRepository.save(book);
+    public BookResponseDto saveBook(BookRequestDto request) {
+        Book book = new Book();
+
+        book.setTitle(request.getTitle());
+        book.setIsbn(request.getIsbn());
+        book.setPublicationYear(request.getPublicationYear());
+
+        book.setAuthor(authorRepository.findById(request.getAuthorId()).orElseThrow(() -> new NoSuchElementException("Author not found")));
+
+        Book savedBook = bookRepository.save(book);
+
+        return convertToResponseDto(savedBook);
     }
 
     @Override
-    public Book getBookById(Long id) {
-        return bookRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Book not found"));
+    public BookResponseDto getBookById(Long id) {
+        Book book = bookRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Book not found"));
+        return convertToResponseDto(book);
     }
 
     @Override
-    public Book updateBook(Long id, Book updatedBook) {
-        Book book = getBookById(id);
-        book.setTitle(updatedBook.getTitle());
-        book.setIsbn(updatedBook.getIsbn());
-        book.setPublicationYear(updatedBook.getPublicationYear());
-        book.setAuthor(updatedBook.getAuthor());
-        return bookRepository.save(book);
+    public BookResponseDto updateBook(Long id, BookRequestDto request) {
+        Book book = bookRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Book not found"));
+
+        book.setTitle(request.getTitle());
+        book.setIsbn(request.getIsbn());
+        book.setPublicationYear(request.getPublicationYear());
+        book.setAuthor(authorRepository.findById(request.getAuthorId()).orElseThrow(() -> new NoSuchElementException("Author not found")));
+
+        Book updatedBook = bookRepository.save(book);
+
+        return convertToResponseDto(updatedBook);
     }
 
     @Override
     public void deleteBook(Long id) {
-        Book book = getBookById(id);
+        Book book = bookRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Book not found"));
         bookRepository.delete(book);
+    }
+
+    private BookResponseDto convertToResponseDto(Book book) {
+        BookResponseDto dto = new BookResponseDto();
+
+        dto.setId(book.getId());
+        dto.setTitle(book.getTitle());
+        dto.setIsbn(book.getIsbn());
+        dto.setPublicationYear(book.getPublicationYear());
+
+        dto.setAuthorId(book.getAuthor().getId());
+        dto.setAuthorName(book.getAuthor().getFullName());
+
+        return dto;
     }
 }

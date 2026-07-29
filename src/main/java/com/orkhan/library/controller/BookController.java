@@ -1,7 +1,8 @@
 package com.orkhan.library.controller;
 
-import com.orkhan.library.entity.Book;
 import com.orkhan.library.service.BookService;
+import com.orkhan.library.dto.BookRequestDto;
+import com.orkhan.library.dto.BookResponseDto;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -24,23 +28,23 @@ public class BookController {
     }
 
     @GetMapping
-    public List<Book> getAllBooks() {
-        return bookService.getAllBooks();
+    public Page<BookResponseDto> getAllBooks(Pageable pageable) {
+        return bookService.getAllBooks(pageable);
     }
 
     @PostMapping
-    public Book saveBook(@RequestBody Book book) {
-        return bookService.saveBook(book);
+    public BookResponseDto saveBook(@Valid @RequestBody BookRequestDto request) {
+        return bookService.saveBook(request);
     }
 
     @GetMapping("/{id}")
-    public Book getBookById(@PathVariable Long id) {
+    public BookResponseDto getBookById(@PathVariable Long id) {
         return bookService.getBookById(id);
     }
 
     @PutMapping("/{id}")
-    public Book updateBook(@PathVariable Long id, @RequestBody Book book) {
-        return bookService.updateBook(id, book);
+    public BookResponseDto updateBook(@PathVariable Long id, @Valid @RequestBody BookRequestDto request) {
+        return bookService.updateBook(id, request);
     }
 
     @DeleteMapping("/{id}")

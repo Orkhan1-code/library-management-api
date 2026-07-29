@@ -1,17 +1,21 @@
 package com.orkhan.library.service;
 
-import com.orkhan.library.entity.Book;
+import com.orkhan.library.dto.BookRequestDto;
+import com.orkhan.library.dto.BookResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 public interface BookService {
 
-    List<Book> getAllBooks();
+    Page<BookResponseDto> getAllBooks(Pageable pageable);
 
-    Book saveBook(Book book);
+    BookResponseDto getBookById(Long id);
 
-    Book getBookById(Long id);
+    BookResponseDto saveBook(BookRequestDto request);
 
-    Book updateBook(Long id, Book book);
+    BookResponseDto updateBook(Long id, BookRequestDto request);
 
     void deleteBook(Long id);
 }

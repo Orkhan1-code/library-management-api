@@ -8,9 +8,18 @@ public class BookResponseDto {
     private Integer publicationYear;
 
     private Long authorId;
-    private String authorFullName;
+    private String authorName;
 
     public BookResponseDto() {
+    }
+
+    public BookResponseDto(Long id, String title, String isbn, Integer publicationYear, Long authorId, String authorName) {
+        this.id = id;
+        this.title = title;
+        this.isbn = isbn;
+        this.publicationYear = publicationYear;
+        this.authorId = authorId;
+        this.authorName = authorName;
     }
 
     public Long getId() {
@@ -45,19 +54,16 @@ public class BookResponseDto {
         this.publicationYear = publicationYear;
     }
 
-    public Long getAuthorId() {
-        return authorId;
-    }
-
     public void setAuthorId(Long authorId) {
         this.authorId = authorId;
     }
 
-    public String getAuthorFullName() {
-        return authorFullName;
+    public String getAuthorName() {
+        return authorName;
     }
 
-    public void setAuthorFullName(String authorFullName) {
-        this.authorFullName = authorFullName;
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
+
 }
