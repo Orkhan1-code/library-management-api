@@ -11,6 +11,8 @@ public interface BookService {
 
     Page<BookResponseDto> getAllBooks(Pageable pageable);
 
+    Page<BookResponseDto> searchBooks(String title, Integer year, Pageable pageable);
+
     BookResponseDto getBookById(Long id);
 
     BookResponseDto saveBook(BookRequestDto request);

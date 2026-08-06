@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -50,5 +51,10 @@ public class BookController {
     @DeleteMapping("/{id}")
     public void deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
+    }
+
+    @GetMapping("/search")
+    public Page<BookResponseDto> searchBook(@RequestParam(required = false) String title, @RequestParam(required = false) Integer year, Pageable pageable) {
+        return bookService.searchBooks(title, year, pageable);
     }
 }

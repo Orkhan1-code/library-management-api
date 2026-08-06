@@ -9,6 +9,8 @@ import com.orkhan.library.service.BookService;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.orkhan.library.specification.BookSpecification;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.NoSuchElementException;
 import java.util.List;
@@ -69,6 +71,12 @@ public class BookServiceImpl implements BookService {
     public void deleteBook(Long id) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Book not found"));
         bookRepository.delete(book);
+    }
+
+    @Override
+    public Page<BookResponseDto> searchBooks(String title, Integer year, Pageable pageable) {
+        Specification<Book> specification = Specification.where(BookSpecification.hasTitle(title)).and(BookSpecification.hasPublicationYear(year));
+        return bookRepository.findAll(specification, pageable).map(this::convertToResponseDto);
     }
 
     private BookResponseDto convertToResponseDto(Book book) {
