@@ -31,3 +31,19 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Environment files ###
+.env
+.env.*
+!.env.example
+
+### Application secrets ###
+application-local.yml
+
+### Uploaded files ###
+uploads/
+
+### Temporary test output ###
+*-test-result.txt
+test-result.txt
+async-test-result.txt*.txt

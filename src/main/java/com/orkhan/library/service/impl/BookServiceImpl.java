@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.orkhan.library.specification.BookSpecification;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.NoSuchElementException;
 import java.util.List;
@@ -48,12 +50,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookResponseDto getBookById(Long id) {
-        Book book = bookRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Book not found"));
-        return convertToResponseDto(book);
-    }
-
-    @Override
+    @CacheEvict(value = "books", key = "#id")
     public BookResponseDto updateBook(Long id, BookRequestDto request) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Book not found"));
 
@@ -68,6 +65,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @CacheEvict(value = "books", key = "#id")
     public void deleteBook(Long id) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Book not found"));
         bookRepository.delete(book);
@@ -77,6 +75,13 @@ public class BookServiceImpl implements BookService {
     public Page<BookResponseDto> searchBooks(String title, Integer year, Pageable pageable) {
         Specification<Book> specification = Specification.where(BookSpecification.hasTitle(title)).and(BookSpecification.hasPublicationYear(year));
         return bookRepository.findAll(specification, pageable).map(this::convertToResponseDto);
+    }
+
+    @Override
+    @Cacheable(value = "books", key = "#id")
+    public BookResponseDto getBookById(Long id) {
+        Book book = bookRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Book not found"));
+        return convertToResponseDto(book);
     }
 
     private BookResponseDto convertToResponseDto(Book book) {
